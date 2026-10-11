@@ -89,3 +89,4 @@ build.bat                    One-click build, outputs to dist\
 ## License
 
 Released under the [PolyForm Noncommercial License 1.0.0](LICENSE). You are free to use, modify and share it for personal, educational and other noncommercial purposes. For commercial use, please get in touch.
+[Email Us](mailto:hello@quodepalette.com)
