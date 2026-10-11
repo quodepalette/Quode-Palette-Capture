@@ -83,10 +83,4 @@ AppIcon.ico / .png    App icon
 build.bat             One-click build, outputs to dist\
 ```
 
-## Known quirks
 
-The folder picker and message boxes use Windows' own dialogs, so they stay light themed. Everything else is dark.
-
-## License
-
-Montserrat is licensed under the SIL Open Font License (see `Fonts/OFL.txt`). Add your own license for the rest of the code here.
