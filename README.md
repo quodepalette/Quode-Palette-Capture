@@ -5,7 +5,7 @@ A small, no-nonsense screen recorder for Windows. It records your screen and wha
 I built it because I wanted something simple that just works, without a pile of settings or a giant installer.
 
 <p align="center">
-  <video src="docs/video.mp4" width="100%" controls autoplay loop muted></video>
+  <video src="https://github.com/user-attachments/assets/729667ac-f57c-4ee5-a26b-2099167d8da9" width="100%" controls autoplay loop muted></video>
 </p>
 
 ## What it does
