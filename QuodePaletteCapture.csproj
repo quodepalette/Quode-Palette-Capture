@@ -1,0 +1,68 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net8.0-windows10.0.19041.0</TargetFramework>
+    <UseWindowsForms>true</UseWindowsForms>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <ApplicationIcon>AppIcon.ico</ApplicationIcon>
+    <AssemblyName>Quode Palette Capture</AssemblyName>
+    <RootNamespace>QuodePaletteCapture</RootNamespace>
+    <Product>Quode Palette Capture</Product>
+    <AssemblyTitle>Quode Palette Capture</AssemblyTitle>
+    <Company>Quode</Company>
+    <Version>1.0.0</Version>
+    <Platforms>x64</Platforms>
+    <PlatformTarget>x64</PlatformTarget>
+    <Platform>x64</Platform>
+    <RuntimeIdentifiers>win-x64</RuntimeIdentifiers>
+    <SelfContained>true</SelfContained>
+    <!--
+      PublishSingleFile is intentionally not used. ScreenRecorderLib.dll is a C++/CLI
+      mixed-mode assembly (native C++ and managed code in one file), and .NET single-file
+      publishing does not support those. Bundling it into one exe corrupts the library and
+      causes a BadImageFormatException the first time it loads, which is when recording
+      starts. Publishing as a normal folder avoids this. Copy and run the whole `dist`
+      folder, not just Quode Palette Capture.exe.
+    -->
+    <GenerateAssemblyInfo>true</GenerateAssemblyInfo>
+    <ApplicationHighDpiMode>PerMonitorV2</ApplicationHighDpiMode>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <!-- Handles Windows Graphics Capture (no flicker/tearing), hardware H.264 encoding
+         via Media Foundation, and WASAPI loopback audio, muxed to MP4 in sync. -->
+    <PackageReference Include="ScreenRecorderLib" Version="6.6.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <!--
+      Montserrat is embedded in the exe (SIL Open Font License, see Fonts/OFL.txt) and
+      loaded at runtime through PrivateFontCollection, so the UI looks the same on any
+      Windows machine whether or not Montserrat is installed.
+    -->
+    <EmbeddedResource Include="Fonts\Montserrat-Regular.ttf">
+      <LogicalName>QuodePaletteCapture.Fonts.Montserrat-Regular.ttf</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Fonts\Montserrat-Medium.ttf">
+      <LogicalName>QuodePaletteCapture.Fonts.Montserrat-Medium.ttf</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Fonts\Montserrat-SemiBold.ttf">
+      <LogicalName>QuodePaletteCapture.Fonts.Montserrat-SemiBold.ttf</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Fonts\Montserrat-Bold.ttf">
+      <LogicalName>QuodePaletteCapture.Fonts.Montserrat-Bold.ttf</LogicalName>
+    </EmbeddedResource>
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="AppIcon.ico">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="AppIcon.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
+</Project>
