@@ -1,47 +1,54 @@
-# Quode Palette Capture
+# JoErl Capture
 
-A simple screen recorder for Windows. It records your screen and your system audio, and nothing else. No webcam, no microphone, no flicker.
+A small, no-nonsense screen recorder for Windows. It records your screen and whatever you're hearing, and that's it. No webcam, no microphone, no flicker, and the audio stays in sync with the video.
+
+I built it because I wanted something simple that just works, without a pile of settings or a giant installer.
+
+<p align="center">
+  <video src="docs/video.mp4" width="100%" controls autoplay loop muted></video>
+</p>
 
 ## What it does
 
-- Records any monitor you pick, saved as a standard `.mp4`
-- Can draw a blue ring around the mouse pointer so viewers can follow it, with almost no performance cost
-- Captures system audio, so whatever you hear through speakers, wired headphones or Bluetooth ends up in the recording
-- Keeps audio and video in sync
-- Plays back at real speed, with no slow motion
-- Uses little CPU when your GPU supports hardware H.264 encoding
-- Has a dark interface with Montserrat built in, so it looks the same on every machine
-- Never touches your microphone or camera
+- Records any monitor to a standard `.mp4`
+- Captures system audio (speakers, wired headphones, Bluetooth, whatever Windows is playing)
+- Pause, resume and stop whenever you like
+- Three quality presets: Low (30 fps, smaller files), Medium (30 fps, balanced) and High (60 fps, best quality)
+- Lives in the system tray so a stray click can't end your recording
+- Dark UI with Montserrat built in, so it looks the same on every PC
 
-## How it works
+## What it deliberately doesn't do
 
-| Goal | Approach |
-|---|---|
-| No flicker or tearing | Frames come from the Windows Graphics Capture API, the same GPU pipeline Windows itself uses |
-| Real-speed video | Every frame carries a timestamp from the capture API, so the video cannot drift |
-| Synced audio | Audio and video are muxed against one shared clock while recording, not joined afterward |
-| System audio only | WASAPI loopback on your default playback device, whatever it is |
-| Light on resources | Hardware H.264 encoding through Media Foundation, with Low, Medium and High presets |
+It never touches your microphone or camera. Those code paths don't exist in the app, so there's nothing to turn off. The audio option only records your playback device.
 
-Capture and encoding are handled by [ScreenRecorderLib](https://www.nuget.org/packages/ScreenRecorderLib).
+## Why it doesn't flicker or drift
 
-## Requirements
+- **No tearing or flicker:** frames come from the Windows Graphics Capture API, the same GPU pipeline Windows itself uses, instead of polling the screen with GDI.
+- **Real-speed video:** every frame is timestamped by the capture API, so the video can't slide into slow motion or fast-forward.
+- **Audio in sync:** audio and video are written against one shared clock as they're captured, not stitched together afterwards.
+- **Light on your PC:** it uses hardware H.264 encoding through Media Foundation when your GPU supports it.
 
-- Windows 10 (version 1903 or later) or Windows 11
-- [.NET 8 SDK](https://dotnet.microsoft.com/download/dotnet/8.0), only needed to build
-- An internet connection for the first build, so NuGet can download the recording library
+Under the hood this is a WinForms app built on [ScreenRecorderLib](https://www.nuget.org/packages/ScreenRecorderLib) (pinned to 6.6.0).
 
-The finished app is self-contained, so the machine that runs it does not need .NET installed.
+## Build it
 
-## Build
+You'll need:
 
-1. Clone or download this repository.
+- Windows 10 (1903 / build 18362) or newer, or Windows 11
+- The [.NET 8 SDK](https://dotnet.microsoft.com/download/dotnet/8.0)
+- An internet connection for the first build, so NuGet can grab the recording library
+
+Then:
+
+1. Clone or download this repo.
 2. Double-click `build.bat`.
-3. Open the `dist` folder and run `Quode Palette Capture.exe`.
+3. Grab the whole `dist` folder and run `JoErlCapture.exe` from inside it.
 
-Copy the whole `dist` folder if you want to move the app, not just the exe. ScreenRecorderLib contains native code that can't be bundled into a single file, so the app ships as a folder.
+Keep the whole folder together, not just the exe. ScreenRecorderLib is a mixed-mode native and managed library, and .NET's single-file publish corrupts those, so the app ships as a folder instead.
 
-You can also build from the command line:
+The build is self-contained, so you only need the .NET SDK on the machine that builds it. Whoever runs the app doesn't need .NET installed.
+
+Prefer the command line?
 
 ```
 dotnet publish -c Release -r win-x64 --self-contained true -p:Platform=x64 -o dist
@@ -49,40 +56,37 @@ dotnet publish -c Release -r win-x64 --self-contained true -p:Platform=x64 -o di
 
 ## Using it
 
-1. Choose a monitor, a quality preset, whether to include system audio, and whether to highlight the mouse pointer.
-2. Pick a save folder if you don't want the default, `Videos\Quode Palette Capture`. Folders inside your user profile are shown as `..\Videos\...` in the window, so your Windows username stays off screen when you record tutorials or videos.
-3. Click **Start Recording**. Use **Pause** and **Resume** when you need to, then **Stop**.
+1. Pick a monitor, a quality preset, and whether to record system audio.
+2. Change the save folder if you want (default is `Videos\JoErl Capture`).
+3. Hit **Start Recording**. Use **Pause** and **Resume** as needed, then **Stop**.
+4. Files are saved as `JoErlCapture_yyyyMMdd_HHmmss.mp4`.
 
-Recordings are saved as `QuodePaletteCapture_yyyyMMdd_HHmmss.mp4`.
+Heads up: clicking the window's X sends the app to the tray instead of closing it. That's on purpose, so you can't kill a recording by accident. Right-click the tray icon for the same controls, or choose **Exit** there to fully quit.
 
-Closing the window sends the app to the system tray instead of quitting, so a click in the wrong place can't end a recording. Right-click the tray icon for Start, Pause and Stop, or choose **Exit** to close the app completely.
+## Troubleshooting
+
+- **Package restore failed:** you need internet for the first build. After that the package is cached.
+- **Recording won't start:** usually a graphics driver problem. Update your GPU driver. If hardware encoding isn't available, the app still works with a bit more CPU load.
+- **Black screen in the recording:** this happens with DRM-protected video or over Remote Desktop. Record the physical screen locally instead.
+- **Something crashed:** the app shows the error and also writes details to `JoErlCapture_error.log` next to the exe.
 
 ## Project layout
 
 ```
-QuodePaletteCapture.csproj   Project file and package reference
-Program.cs            Entry point and error handling
-MainForm.cs           Interface, tray icon and recording logic
-CursorHighlight.cs    Blue ring that follows the mouse pointer
+JoErlCapture.csproj   Project file and ScreenRecorderLib reference
+Program.cs            Entry point, single-instance check, error handling
+MainForm.cs           UI, tray icon and recording logic
 AppFonts.cs           Loads the embedded Montserrat fonts
-AppTheme.cs           Dark theme, title bar and custom controls
-Fonts/                Montserrat (SIL Open Font License)
+AppTheme.cs           Dark theme, title bar and tray menu
+Fonts/                Montserrat .ttf files (SIL Open Font License)
 AppIcon.ico / .png    App icon
-build.bat             One-click build script
+build.bat             One-click build, outputs to dist\
 ```
 
-## Troubleshooting
+## Known quirks
 
-**Package restore fails.** The first build needs internet access to download ScreenRecorderLib. After that it is cached.
-
-**The build complains about ScreenRecorderLib.** The project is pinned to version `6.6.0`. If you change it on purpose and something breaks, go back to `6.6.0` or check the [release notes](https://www.nuget.org/packages/ScreenRecorderLib).
-
-**Recording won't start.** This is usually a graphics driver issue. Update your driver. Without hardware encoding the app still works, with a bit more CPU load.
-
-**The recording is black.** Protected content such as DRM video can't be captured, and neither can a Remote Desktop session. Record the physical screen locally instead.
-
-**Some dialogs aren't dark.** The folder picker and message boxes belong to Windows and keep the system theme. Everything else is themed.
+The folder picker and message boxes use Windows' own dialogs, so they stay light themed. Everything else is dark.
 
 ## License
 
-Add your preferred license for the app code here. Montserrat is included under the SIL Open Font License, see `Fonts/OFL.txt`.
+Montserrat is licensed under the SIL Open Font License (see `Fonts/OFL.txt`). Add your own license for the rest of the code here.
