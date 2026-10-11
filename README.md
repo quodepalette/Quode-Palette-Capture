@@ -4,6 +4,10 @@ A small, no-nonsense screen recorder for Windows. It records your screen and wha
 
 I built it because I wanted something simple that just works, without a pile of settings or a giant installer.
 
+<p align="center">
+  <img src="docs/video.gif" alt="Quode Palette Capture Demo" width="100%">
+</p>
+
 ## What it does
 
 - Records any monitor to a standard `.mp4`
